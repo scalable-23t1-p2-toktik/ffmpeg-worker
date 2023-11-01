@@ -38,8 +38,6 @@ def chunk_and_thumbnail(input_key, ffmpeg_path):
     # Calculate the segment duration based on the video duration
     segment_duration = video_duration / desired_segment_count
 
-    print(segment_duration)
-
     ffmpeg_ffmpeg_path = ffmpeg_path + "/ffmpeg"
 
     thumbnail_command = f'{ffmpeg_ffmpeg_path} -i {input_key} -ss {random_time} -vframes 1 -q:v 2 {output_dir}thumbnail.jpg'
@@ -48,7 +46,7 @@ def chunk_and_thumbnail(input_key, ffmpeg_path):
 
 
     # FFmpeg command to create HLS format chunks with dynamic segment duration
-    hls_command = f"{ffmpeg_ffmpeg_path} -i {input_key} -c:v h264 -hls_time {segment_duration} -hls_list_size 0 -hls_segment_filename {output_dir}output%03d.ts {output_dir}playlist.m3u8"
+    hls_command = f"{ffmpeg_ffmpeg_path} -i {input_key} -c:v h264 -hls_time {segment_duration} -hls_list_size 0  -hls_flags split_by_time -hls_segment_filename {output_dir}output%03d.ts {output_dir}playlist.m3u8"
     subprocess.call(hls_command, shell=True)
 
     with open(f"{output_dir}playlist.m3u8", 'a') as f:

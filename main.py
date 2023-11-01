@@ -20,14 +20,12 @@ s3 = boto3.client('s3',
 # redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 # Delete this field when redis is implemented
-input_key = "Download.mp4"
+# input_key = "What can I say except.....mp4"
 
 bucket_name = 'toktik-bucket'
 
 def process_video(input_key, bucket_name):
     try:
-        # # Retrieve the input_key from Redis
-        # input_key = redis_client.get('input_key').decode('utf-8')
 
         ffmpeg_path = os.path.dirname(os.path.abspath(__file__)) + "/ffmpeg"
         
@@ -73,4 +71,28 @@ def process_video(input_key, bucket_name):
 
 
 
-process_video(input_key, bucket_name)
+
+def handle_message(message):
+    # This function will be called when a message is received on the channel
+    process_video(message['data'].decode(), bucket_name)
+
+def listen_to_redis_channel(redis_client, channel):
+    pubsub = redis_client.pubsub()
+    pubsub.subscribe(channel)
+
+    for message in pubsub.listen():
+        if message['type'] == 'message':
+            handle_message(message)
+
+if __name__ == '__main__':
+    redis_host = 'localhost'  # Replace with your Redis server's host
+    redis_port = 6379
+    channel_name = 'ffmpeg_channel'  # Replace with your desired channel name
+
+    # Initialize a Redis client
+    redis_client = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
+
+    print("ffmpeg worker up and running")
+
+    # Start listening to the Redis channel
+    listen_to_redis_channel(redis_client, channel_name)
