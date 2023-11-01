@@ -74,25 +74,23 @@ def process_video(input_key, bucket_name):
 
 def handle_message(message):
     # This function will be called when a message is received on the channel
-    process_video(message['data'].decode(), bucket_name)
+    process_video(message.decode(), bucket_name)
 
 def listen_to_redis_channel(redis_client, channel):
-    pubsub = redis_client.pubsub()
-    pubsub.subscribe(channel)
-
-    for message in pubsub.listen():
-        if message['type'] == 'message':
-            handle_message(message)
+    res32 = redis_client.brpop(channel, timeout=0)
+    handle_message(res32[1])
 
 if __name__ == '__main__':
-    redis_host = 'localhost'  # Replace with your Redis server's host
+    redis_host = 'localhost'  
     redis_port = 6379
-    channel_name = 'ffmpeg_channel'  # Replace with your desired channel name
+    channel_name = 'ffmpeg_channel'
 
     # Initialize a Redis client
     redis_client = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
 
     print("ffmpeg worker up and running")
+    
+    while True:
+        # Start listening to the Redis channel
+        listen_to_redis_channel(redis_client, channel_name)
 
-    # Start listening to the Redis channel
-    listen_to_redis_channel(redis_client, channel_name)
