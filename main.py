@@ -19,22 +19,15 @@ s3 = boto3.client('s3',
 
 bucket_name = 'toktik-bucket'
 
-def dispatch_message(username, key):
-    # URL to be decided
-    URL = "localhost:"
-
+def dispatch_message(username, key, redis_client):
     if(key != None):
-        data = {"status": 200,
-                "username": username,
-                "s3_directory": key}
-
-        r = requests.post(url=URL, data=data)
+        data = f"200:{username}:{key}"
+        redis_client.lpush("ffmpeg_response_channel", data)
     else:
-        data = {"status": 500,
-                "username": username}
-        r = requests.post(url=URL, data=data)
+        data = f"500:{username}:{key}"
+        redis_client.lpush("ffmpeg_response_channel", data)
 
-def process_video(username, input_key, bucket_name):
+def process_video(username, input_key, bucket_name, redis_client):
     try:
         ffmpeg_path = os.path.dirname(os.path.abspath(__file__)) + "/ffmpeg"
         
@@ -71,13 +64,13 @@ def process_video(username, input_key, bucket_name):
         subprocess.call(f'rm {output_key}', shell=True)
 
         # Notify backend that upload succeded
-        dispatch_message(username, f'hls/{unique_folder_name}/')
+        dispatch_message(username, f'hls/{unique_folder_name}/', redis_client)
         
     except Exception as e:
         print(f'An error occurred: {str(e)}')
 
         # Notify backend that process failed
-        dispatch_message(username, None)
+        dispatch_message(username, None, redis_client)
 
 
 
@@ -86,7 +79,7 @@ def handle_message(message):
     decoded_message_arr = decoded_message.split(":")
     username = decoded_message_arr[0]
     video_name = decoded_message_arr[1]
-    process_video(username, video_name, bucket_name)
+    process_video(username, video_name, bucket_name, redis_client)
 
 def listen_to_redis_channel(redis_client, channel):
     res32 = redis_client.brpop(channel, timeout=0)
