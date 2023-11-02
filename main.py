@@ -7,7 +7,6 @@ import os
 from dotenv import load_dotenv
 from module import converter
 from module import chunker
-import requests
 
 load_dotenv()
 
