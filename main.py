@@ -7,6 +7,7 @@ import os
 from dotenv import load_dotenv
 from module import converter
 from module import chunker
+import requests
 
 load_dotenv()
 
@@ -18,21 +19,31 @@ s3 = boto3.client('s3',
 
 bucket_name = 'toktik-bucket'
 
+def dispatch_message(username, key):
+    # URL to be decided
+    URL = "localhost:"
+
+    if(key != None):
+        data = {"status": 200,
+                "username": username,
+                "s3_directory": key}
+
+        r = requests.post(url=URL, data=data)
+    else:
+        data = {"status": 500,
+                "username": username}
+        r = requests.post(url=URL, data=data)
+
 def process_video(username, input_key, bucket_name):
     try:
-
         ffmpeg_path = os.path.dirname(os.path.abspath(__file__)) + "/ffmpeg"
         
-        # Generating output video name in mp4 format
         vid_name_arr = input_key.rsplit('.', 1)
         output_key = "\"" + vid_name_arr[0] + ".mp4" +  "\""
 
-        # Download the input video from S3
         s3.download_file(bucket_name, input_key, "temp/" + input_key)
 
-
         input_key = "\"temp/" + input_key + "\""
-
 
         converter.convert(input_key, output_key, ffmpeg_path)
 
@@ -43,7 +54,6 @@ def process_video(username, input_key, bucket_name):
         output_dir = chunk_and_thumbnail_return[1]
         segment_files = chunk_and_thumbnail_return[2]
 
-        # Upload each segment file to S3
         for segment_file in segment_files:
             s3.upload_file(segment_file, bucket_name, f'hls/{unique_folder_name}/{segment_file.split("/")[-1]}')
 
@@ -60,9 +70,14 @@ def process_video(username, input_key, bucket_name):
 
         subprocess.call(f'rm {output_key}', shell=True)
 
+        # Notify backend that upload succeded
+        dispatch_message(username, f'hls/{unique_folder_name}/')
+        
     except Exception as e:
         print(f'An error occurred: {str(e)}')
 
+        # Notify backend that process failed
+        dispatch_message(username, None)
 
 
 
