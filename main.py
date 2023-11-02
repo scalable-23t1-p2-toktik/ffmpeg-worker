@@ -84,8 +84,8 @@ def process_video(username, input_key, bucket_name):
 def handle_message(message):
     decoded_message = message.decode()
     decoded_message_arr = decoded_message.split(":")
-    username = decoded_message[0]
-    video_name = decoded_message[1]
+    username = decoded_message_arr[0]
+    video_name = decoded_message_arr[1]
     process_video(username, video_name, bucket_name)
 
 def listen_to_redis_channel(redis_client, channel):
