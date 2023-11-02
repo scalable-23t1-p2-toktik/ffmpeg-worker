@@ -87,9 +87,9 @@ def listen_to_redis_channel(redis_client, channel):
 if __name__ == '__main__':
 
     # Change to localhost for local testing
-    redis_host = 'redis' 
+    redis_host = os.environ.get("REDIS_HOST")
 
-    redis_port = 6379
+    redis_port = os.environ.get("REDIS_PORT")
     channel_name = 'ffmpeg_channel'
 
     redis_client = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
