@@ -31,11 +31,11 @@ def process_video(username, input_key, bucket_name, redis_client):
         ffmpeg_path = os.path.dirname(os.path.abspath(__file__)) + "/ffmpeg"
         
         vid_name_arr = input_key.rsplit('.', 1)
-        output_key = "\"" + vid_name_arr[0] + ".mp4" +  "\""
+        output_key = vid_name_arr[0] + ".mp4"
 
         s3.download_file(bucket_name, input_key, "temp/" + input_key)
 
-        input_key = "\"temp/" + input_key + "\""
+        input_key = "temp/" + input_key
 
         converter.convert(input_key, output_key, ffmpeg_path)
 

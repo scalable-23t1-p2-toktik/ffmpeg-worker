@@ -9,7 +9,8 @@ def chunk_and_thumbnail(input_key, ffmpeg_path):
 
     # Create a unique folder for this set of chunks
     unique_folder_name_arr = input_key.rsplit('.', 1)
-    output_dir += unique_folder_name_arr[0] + '/'
+    unique_folder_name = unique_folder_name_arr[0]
+    output_dir += unique_folder_name + '/'
 
     # Create the temporary directory
     subprocess.call(f'mkdir -p {output_dir}', shell=True)
@@ -30,7 +31,6 @@ def chunk_and_thumbnail(input_key, ffmpeg_path):
     video_duration = float(result.stdout)
     random_time = random.uniform(0, video_duration)
 
-    input_key = "\"" + input_key + "\""
 
     # Set the desired segment count relative to the video duration
     desired_segment_count = 10  # Adjust as needed
