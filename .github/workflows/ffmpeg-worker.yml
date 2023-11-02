@@ -40,4 +40,3 @@ jobs:
             run: |
                 docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-worker:${{ steps.vars.outputs.sha_short }}
                 docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-worker:latest
-            

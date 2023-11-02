@@ -8,7 +8,7 @@ def chunk_and_thumbnail(input_key, ffmpeg_path):
     output_dir = 'output_hls/'
 
     # Create a unique folder for this set of chunks
-    unique_folder_name = str(uuid.uuid4())
+    unique_folder_name = input_key
     output_dir += unique_folder_name + '/'
 
     # Create the temporary directory
@@ -35,8 +35,6 @@ def chunk_and_thumbnail(input_key, ffmpeg_path):
     # Set the desired segment count relative to the video duration
     desired_segment_count = 10  # Adjust as needed
 
-    # Calculate the segment duration based on the video duration
-    segment_duration = video_duration / desired_segment_count
 
     ffmpeg_ffmpeg_path = ffmpeg_path + "/ffmpeg"
 
