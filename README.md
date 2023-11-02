@@ -2,7 +2,7 @@
 
 # Prerequisite:
 First, have a redis server setup and ready:
-  - ``` docker run -d -p 6379:6379 redisnet redis ```
+  - ``` docker run -d -p 6379:6379 redis ```
 
 # TODOS:
 
