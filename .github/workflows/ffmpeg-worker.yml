@@ -31,10 +31,10 @@ jobs:
             run: |
                 cd frontend && \
                 docker build . --file Dockerfile \
-                --tag ghcr.io/${{ env.BASE_IMG_NAME }}/yuttasart-scalable-frontend:${{ steps.vars.outputs.sha_short }} \
-                --tag ghcr.io/${{ env.BASE_IMG_NAME }}/yuttasart-scalable-frontend:latest
+                --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-worker:${{ steps.vars.outputs.sha_short }} \
+                --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-worker:latest
         -   name: Publish the images
             run: |
-                docker push ghcr.io/${{ env.BASE_IMG_NAME }}/yuttasart-scalable-frontend:${{ steps.vars.outputs.sha_short }}
-                docker push ghcr.io/${{ env.BASE_IMG_NAME }}/yuttasart-scalable-frontend:latest
+                docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-worker:${{ steps.vars.outputs.sha_short }}
+                docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-worker:latest
             
