@@ -8,10 +8,11 @@ services:
       - ffmpeg-network
 
   ffmpeg:
-      build:
-        context: .
+      image: ghcr.io/scalable-23t1-p2-toktik/ffmpeg-worker/scalable-p2-ffmpeg-worker:latest
       networks:
        - ffmpeg-network
+      env_file:
+        - .env
       depends_on:
        - redis
   
