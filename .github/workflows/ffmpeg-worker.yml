@@ -28,6 +28,10 @@ jobs:
             id: vars
             run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
         -   name: Build the Docker image
+            env:
+                AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                AWS_REGION: ${{ secrets.AWS_REGION }}
             run: |
                 docker build . --file Dockerfile \
                 --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-worker:${{ steps.vars.outputs.sha_short }} \
