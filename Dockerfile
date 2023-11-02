@@ -8,6 +8,6 @@ COPY output_hls/ /output_hls
 COPY temp/ /temp/
 
 # Remove these when ready to push to ghcr
-COPY .env /
+# COPY .env /
 
 CMD [ "python3", "./main.py" ]
