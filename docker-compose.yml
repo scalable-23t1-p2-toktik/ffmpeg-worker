@@ -1,0 +1,19 @@
+version: "3"
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - ffmpeg-network
+
+  ffmpeg:
+      build:
+        context: .
+      networks:
+       - ffmpeg-network
+      depends_on:
+       - redis
+  
+networks:
+  ffmpeg-network:

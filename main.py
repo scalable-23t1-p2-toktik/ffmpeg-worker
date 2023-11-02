@@ -85,7 +85,10 @@ def listen_to_redis_channel(redis_client, channel):
     handle_message(res32[1])
 
 if __name__ == '__main__':
-    redis_host = 'localhost'  
+
+    # Change to localhost for local testing
+    redis_host = 'localhost' 
+
     redis_port = 6379
     channel_name = 'ffmpeg_channel'
 

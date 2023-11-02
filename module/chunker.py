@@ -46,7 +46,11 @@ def chunk_and_thumbnail(input_key, ffmpeg_path):
 
 
     # FFmpeg command to create HLS format chunks with dynamic segment duration
-    hls_command = f"{ffmpeg_ffmpeg_path} -i {input_key} -c:v h264 -hls_time {segment_duration} -hls_list_size 0  -hls_flags split_by_time -hls_segment_filename {output_dir}output%03d.ts {output_dir}playlist.m3u8"
+    # hls_command = f"{ffmpeg_ffmpeg_path} -i {input_key} -c:v h264 -hls_time {segment_duration} -hls_list_size 0  -hls_flags split_by_time -hls_segment_filename {output_dir}output%03d.ts {output_dir}playlist.m3u8"
+    # subprocess.call(hls_command, shell=True)
+
+    # ffmpeg -i input.mp4 -c:v libx264 -g 30 -c:a aac -f segment -segment_time 10 -segment_list playlist.m3u8 -segment_format mpegts output%03d.ts
+    hls_command = f"{ffmpeg_ffmpeg_path} -i {input_key} -c:v libx264 -g 30 -c:a aac -f segment -segment_time 10 -segment_list {output_dir}playlist.m3u8 -segment_format mpegts {output_dir}output%03d.ts"
     subprocess.call(hls_command, shell=True)
 
     with open(f"{output_dir}playlist.m3u8", 'a') as f:
