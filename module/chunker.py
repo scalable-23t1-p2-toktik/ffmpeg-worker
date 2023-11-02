@@ -8,8 +8,8 @@ def chunk_and_thumbnail(input_key, ffmpeg_path):
     output_dir = 'output_hls/'
 
     # Create a unique folder for this set of chunks
-    unique_folder_name = input_key
-    output_dir += unique_folder_name + '/'
+    unique_folder_name_arr = input_key.rsplit('.', 1)
+    output_dir += unique_folder_name_arr[0] + '/'
 
     # Create the temporary directory
     subprocess.call(f'mkdir -p {output_dir}', shell=True)
