@@ -7,10 +7,45 @@ First, have a redis server setup and ready:
 After that, install the requirements:
   - ``` pip3 install -r requirements.txt ```
 
+
+# Environment Variable requirements:
+
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
+  - AWS_REGION
+  - AWS_BUCKET_NAME
+  - REDIS_HOST
+  - REDIS_PORT
+  - REDIS_FFMPEG_BACKEND_TO_THUMBNAIL_CHANNEL
+  - REDIS_FFMPEG_THUMBNAIL_TO_CONVERTER_CHANNEL
+  - REDIS_FFMPEG_CONVERTER_TO_CHUNKER_CHANNEL
+  - REDIS_FFMPEG_RESPONSE_CHANNEL
+  - PATH_TO_PV
+
+GLOBALS (Used in all workers):
+  - REDIS_HOST
+  - REDIS_PORT
+  - REDIS_FFMPEG_RESPONSE_CHANNEL
+  - PATH_TO_PV
+  - FFMPEG_PATH
+
+Thumbnail:
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
+  - AWS_REGION
+  - AWS_BUCKET_NAME
+  - REDIS_FFMPEG_BACKEND_TO_THUMBNAIL_CHANNEL
+
+Converter:
+  - REDIS_FFMPEG_THUMBNAIL_TO_CONVERTER_CHANNEL
+
+Chunker:
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
+  - AWS_REGION
+  - AWS_BUCKET_NAME
+  - REDIS_FFMPEG_CONVERTER_TO_CHUNKER_CHANNEL
+
 # TODOS:
 
-- Add github action and github workflow for this
 - Add a monitor to observe the progress of this worker (Probably optional)
-- Containerize this worker
-- Handle error (Like bad file naming?)
-    - Check for all cases of error that could happen too

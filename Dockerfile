@@ -1,14 +1,32 @@
-FROM python:3
+FROM python:3 as thumbnail
 COPY requirements.txt /
 RUN pip install -r requirements.txt
-ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-ENV AWS_REGION=$AWS_REGION
-COPY main.py /
+COPY module/thumbnailer/main.py /
 COPY ffmpeg/ /ffmpeg/
-COPY module/ /module/
-COPY output_hls/ /output_hls
-COPY temp/ /temp/
+
+# Remove these when ready to push to ghcr
+# COPY .env /
+
+CMD [ "python3", "-u", "./main.py" ]
+
+FROM python:3 as converter
+COPY requirements.txt /
+RUN pip install -r requirements.txt
+COPY module/converter/main.py /
+COPY ffmpeg/ /ffmpeg/
+
+
+# Remove these when ready to push to ghcr
+# COPY .env /
+
+CMD [ "python3", "-u", "./main.py" ]
+
+FROM python:3 as chunker
+COPY requirements.txt /
+RUN pip install -r requirements.txt
+COPY module/chunker/main.py /
+COPY ffmpeg/ /ffmpeg/
+
 
 # Remove these when ready to push to ghcr
 # COPY .env /
