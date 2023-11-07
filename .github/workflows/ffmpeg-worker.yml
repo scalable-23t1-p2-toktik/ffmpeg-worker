@@ -27,16 +27,44 @@ jobs:
         -   name: Derive short SHA name
             id: vars
             run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-        -   name: Build the Docker image
+
+        -   name: Build the Docker image for converter
             env:
                 AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                 AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                 AWS_REGION: ${{ secrets.AWS_REGION }}
             run: |
-                docker build . --file Dockerfile \
-                --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-worker:${{ steps.vars.outputs.sha_short }} \
-                --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-worker:latest
+                cd ..
+                cd ..
+                docker build . --file module/converter/Dockerfile \
+                --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-converter:${{ steps.vars.outputs.sha_short }} \
+                --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-converter:latest
+
+        -   name: Build the Docker image for thumbnailer
+            env:
+                AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                AWS_REGION: ${{ secrets.AWS_REGION }}
+            run: |
+                cd ..
+                cd ..
+                docker build . --file module/thumbnailer/Dockerfile \
+                --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-thumbnailer:${{ steps.vars.outputs.sha_short }} \
+                --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-thumbnailer:latest
+
+        -   name: Build the Docker image for chunker
+            env:
+                AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                AWS_REGION: ${{ secrets.AWS_REGION }}
+            run: |
+                cd ..
+                cd ..
+                docker build . --file module/chunker/Dockerfile \
+                --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-chunker:${{ steps.vars.outputs.sha_short }} \
+                --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-chunker:latest
+
         -   name: Publish the images
             run: |
-                docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-worker:${{ steps.vars.outputs.sha_short }}
-                docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-worker:latest
+                docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-chunker:${{ steps.vars.outputs.sha_short }}
+                docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-chunker:latest

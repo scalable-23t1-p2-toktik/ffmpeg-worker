@@ -25,34 +25,27 @@ def dispatch_message(username, path_to_s3, process_complete, redis_client):
         redis_client.lpush(channel, data)
 
 
-def chunking_video(username, video_name, video_path, bucket_name, redis_client):
+def chunking_video(username, video_name, video_path, chunk_video_dir, bucket_name, redis_client):
     process_complete = False
 
     try:
         ffmpeg_path = path_correction(os.environ.get("FFMPEG_PATH"))
-        pv_path = path_correction(os.environ.get("PATH_TO_PV"))
+        new_vid_name = video_name.rsplit('.', 1)[0]
 
-        path_to_video = pv_path + "/" + video_path
-        path_to_chunks = pv_path + "/videos/" + username + "/" + video_name
-
-        hls_command = f"{ffmpeg_path + "/ffmpeg"} -i {path_to_video} -c:v libx264 -g 30 -c:a aac -f segment -segment_time 10 -segment_list {path_to_chunks}/playlist.m3u8 -segment_format mpegts {path_to_chunks}/output%03d.ts"
-        try:
-            subprocess.call(hls_command, shell=True)
-            print("Chunking complete")
-        except Exception as e1:
-            print(f'An error occurred during chunking: {str(e1)}')
-            dispatch_message(username, "None", process_complete, redis_client)
-
-        with open(f"{path_to_chunks}/playlist.m3u8", 'a') as f:
+        hls_command = f"{ffmpeg_path + "/ffmpeg"} -i {video_path} -c:v libx264 -g 30 -c:a aac -f segment -segment_time 10 -segment_list {chunk_video_dir}/playlist.m3u8 -segment_format mpegts {chunk_video_dir}/output%03d.ts"
+        
+        subprocess.call(hls_command, shell=True)
+        print("Chunking complete")
+        
+        with open(f"{chunk_video_dir}/playlist.m3u8", 'a') as f:
             f.write('\n#EXT-X-IMAGE:thumbnail.jpg\n')
 
-
         # List the HLS segment files
-        chunked_dir = [os.path.join(path_to_chunks, file) for file in os.listdir(path_to_chunks) if
+        chunked_dir = [os.path.join(chunk_video_dir, file) for file in os.listdir(chunk_video_dir) if
                          file.startswith('output') and file.endswith('.ts')]
 
-        unique_folder_name = video_name
-        output_dir = path_to_chunks
+        unique_folder_name = new_vid_name
+        output_dir = chunk_video_dir
         segment_files = chunked_dir
 
         try:
@@ -77,7 +70,7 @@ def chunking_video(username, video_name, video_path, bucket_name, redis_client):
             # Clean up the temporary directory
 
             subprocess.call(f'rm -r {output_dir}', shell=True)
-            subprocess.call(f'rm {path_to_video}', shell=True)
+            subprocess.call(f'rm {video_path}', shell=True)
 
         except Exception as e3:
             print(f"An error occurred during video files cleaning up: {str(e3)}")
@@ -92,7 +85,7 @@ def chunking_video(username, video_name, video_path, bucket_name, redis_client):
         print(f'An error occurred in chunker worker: {str(e)}')
 
         # Notify backend that process failed
-        dispatch_message(username, None, redis_client)
+        dispatch_message(username, "None", redis_client)
 
 
 def handle_message(message):
@@ -100,9 +93,10 @@ def handle_message(message):
     decoded_message_arr = decoded_message.split(":")
     username = decoded_message_arr[0]
     video_name = decoded_message_arr[1]
-    video_path = decoded_message_arr[2]
+    converted_video_path = decoded_message_arr[2]
+    chunk_dir = decoded_message_arr[3]
     bucket_name = os.environ.get("AWS_BUCKET_NAME")
-    chunking_video(username, video_name, video_path, bucket_name, redis_client)
+    chunking_video(username, video_name, converted_video_path, chunk_dir, bucket_name, redis_client)
 
 
 def listen_to_redis_channel(redis_client, channel):
@@ -115,7 +109,7 @@ if __name__ == '__main__':
     redis_host = os.environ.get("REDIS_HOST")
 
     redis_port = os.environ.get("REDIS_PORT")
-    channel_name = os.environ.get("REDIS_FFMPEG_CONVERTER_TO_CHUNKER_CHANNEL")
+    channel_name = os.environ.get("REDIS_FFMPEG_THUMBNAIL_TO_CHUNKER_CHANNEL")
 
     redis_client = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
 

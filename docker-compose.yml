@@ -7,10 +7,43 @@ services:
     networks:
       - ffmpeg-network
 
-  ffmpeg:
-      image: ghcr.io/scalable-23t1-p2-toktik/ffmpeg-worker/scalable-p2-ffmpeg-worker:latest
+  ffmpeg-thumbnail:
+      image: ffmpeg-thumbnailer
+      build:
+        context: .
+        dockerfile: ./module/thumbnailer/Dockerfile
       networks:
        - ffmpeg-network
+      volumes:
+       - pv:/pv
+      env_file:
+        - .env
+      depends_on:
+       - redis
+
+  ffmpeg-convert:
+      image: ffmpeg-converter
+      build:
+        context: .
+        dockerfile: ./module/converter/Dockerfile
+      networks:
+       - ffmpeg-network
+      volumes:
+       - pv:/pv
+      env_file:
+        - .env
+      depends_on:
+       - redis
+
+  ffmpeg-chunk:
+      image: ffmpeg-chunker
+      build:
+        context: .
+        dockerfile: ./module/chunker/Dockerfile
+      networks:
+       - ffmpeg-network
+      volumes:
+       - pv:/pv
       env_file:
         - .env
       depends_on:
@@ -18,3 +51,10 @@ services:
   
 networks:
   ffmpeg-network:
+volumes:
+  pv:
+    driver: local # Define the driver and options under the volume name
+    driver_opts:
+      type: none
+      device: ./pv
+      o: bind
