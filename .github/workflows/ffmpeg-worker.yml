@@ -58,7 +58,17 @@ jobs:
                 --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-chunker:${{ steps.vars.outputs.sha_short }} \
                 --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-chunker:latest
 
-        -   name: Publish the images
+        -   name: Publish the images for converter
+            run: |
+                docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-converter:${{ steps.vars.outputs.sha_short }}
+                docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-converter:latest
+
+        -   name: Publish the images for thumbnailer
+            run: |
+                docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-thumbnailer:${{ steps.vars.outputs.sha_short }}
+                docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-thumbnailer:latest
+
+        -   name: Publish the images for chunker
             run: |
                 docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-chunker:${{ steps.vars.outputs.sha_short }}
                 docker push ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-chunker:latest
