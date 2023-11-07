@@ -34,9 +34,6 @@ jobs:
                 AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                 AWS_REGION: ${{ secrets.AWS_REGION }}
             run: |
-                pwd
-                cd ..
-                cd ..
                 docker build . --file ./module/converter/Dockerfile \
                 --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-converter:${{ steps.vars.outputs.sha_short }} \
                 --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-converter:latest
@@ -47,8 +44,6 @@ jobs:
                 AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                 AWS_REGION: ${{ secrets.AWS_REGION }}
             run: |
-                cd ..
-                cd ..
                 docker build . --file ./module/thumbnailer/Dockerfile \
                 --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-thumbnailer:${{ steps.vars.outputs.sha_short }} \
                 --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-thumbnailer:latest
@@ -59,8 +54,6 @@ jobs:
                 AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                 AWS_REGION: ${{ secrets.AWS_REGION }}
             run: |
-                cd ..
-                cd ..
                 docker build . --file ./module/chunker/Dockerfile \
                 --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-chunker:${{ steps.vars.outputs.sha_short }} \
                 --tag ghcr.io/${{ env.BASE_IMG_NAME }}/scalable-p2-ffmpeg-chunker:latest
