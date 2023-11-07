@@ -1,11 +1,11 @@
 # ffmpeg-worker
 
 # Prerequisite:
-First, have a redis server setup and ready:
-  - ``` docker run -d -p 6379:6379 redis ```
+Docker compose, local testing:
+Just do:
+  - ``` docker compose up -d ```
 
-After that, install the requirements:
-  - ``` pip3 install -r requirements.txt ```
+And then try testing out by sending message to redis at hostname: localhost
 
 
 # Environment Variable requirements:
